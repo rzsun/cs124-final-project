@@ -72,6 +72,13 @@ def generate_genotypes_individuals(maf, size, n, related):
     return children
 
 def baseline_comparison(a, b):
+    ''' baseline naive comparison
+    args:
+        a, b = genotypes
+
+    Genotype given by:
+    0 = homogenous minor // 1 = homogenous major // 2 = heterogenous major
+    '''
     counter = 0
     for i in range(len(a)):
         if a[i] == b[i]:
@@ -81,9 +88,15 @@ def baseline_comparison(a, b):
     return (counter > 0)
 
 def run_baseline(maf, size, n):
+    ''' runs baseline comparison
+    args:
+        maf = minor allele frequency
+        size = SNPs size
+        n = number of individuals in test
+    '''
     correct = 0
     for i in range(0, n):
-        if np.random.randint(10) >= 7:
+        if np.random.randint(10) >= 5:
             compared_SNPs = generate_genotypes_individuals(maf, size, 2, True)
             if baseline_comparison(compared_SNPs[0], compared_SNPs[1]) == True:
                 correct += 1
@@ -94,29 +107,16 @@ def run_baseline(maf, size, n):
     return correct / float(n)
 
 def improved_comparison(a, b, p):
+    ''' improved comparison using probability matrices
+    args:
+        a, b = genotypes
+        p = maf
+
+    Genotype given by:
+    0 = homogenous minor // 1 = homogenous major // 2 = heterogenous major
+    '''
     unrelated = [[0 for x in range(3)] for x in range(3)]
     related = [[0 for x in range(3)] for x in range(3)]
-
-    '''unrelated[0][0] = (1-p) * (1-p) * (1-p) * (1-p)
-    unrelated[0][1] = (1-p) * (1-p) * p * p
-    unrelated[0][2] = 2 * (1-p) * (1-p) * (1-p) * p
-    unrelated[1][0] = (1-p) * (1-p) * p * p
-    unrelated[1][1] = p * p * p * p
-    unrelated[1][2] = 2 * (1-p) * p * p * p
-    unrelated[2][0] = 2 * (1-p) * (1-p) * (1-p) * p
-    unrelated[2][1] = 2 * (1-p) * p * p * p
-    unrelated[2][2] = 4 * (1-p) * (1-p) * p * p
-
-    related[0][0] = unrelated[0][0] * 1 + unrelated[0][2] * 0.25 + unrelated[2][0] * 0.25 + unrelated[2][2] * 0.0625
-    related[0][1] = unrelated[2][2] * 0.0625
-    related[0][2] = unrelated[0][2] * 0.25 + unrelated[2][0] * 0.25 + unrelated[2][2] + 0.125
-    related[1][0] = unrelated[2][2] * 0.0625
-    related[1][1] = unrelated[1][1] * 1 + unrelated[1][2] * 0.25 + unrelated[2][1] * 0.25 + unrelated[2][2] * 0.0625
-    related[1][2] = unrelated[1][2] * 0.25 + unrelated[2][1] * 0.25 + unrelated[2][2] * 0.125
-    related[2][0] = unrelated[0][2] * 0.25 + unrelated[2][0] * 0.25 + unrelated[2][2] * 0.125
-    related[2][1] = unrelated[1][2] * 0.25 + unrelated[2][1] * 0.25 + unrelated[2][2] * 0.125
-    related[2][2] = unrelated[0][1] * 1 + unrelated[1][0] * 1 + unrelated[0][2] * 0.25 + unrelated[2][0] * 0.25 + unrelated[1][2] * 0.25 + unrelated[2][1] * 0.25 + unrelated[2][2] * 0.25
-    '''
 
     unrelated[0][0] = (1-p) * (1-p) * (1-p) * (1-p)
     unrelated[0][1] = p * p * (1-p) * (1-p)
@@ -151,9 +151,15 @@ def improved_comparison(a, b, p):
     return num_related >= num_unrelated
 
 def run_improved(maf, size, n):
+    ''' runs improved comparison
+    args:
+        maf = minor allele frequency
+        size = SNPs size
+        n = number of individuals in test
+    '''
     correct = 0
     for i in range(0, n):
-        if np.random.randint(10) >= 7:
+        if np.random.randint(10) >= 5:
             compared_SNPs = generate_genotypes_individuals(maf, size, 2, True)
             if improved_comparison(compared_SNPs[0], compared_SNPs[1], maf) == True:
                 correct += 1
@@ -163,5 +169,4 @@ def run_improved(maf, size, n):
                 correct += 1
     return correct / float(n)
 
-print run_baseline(0.4, 100, 1000)
-print run_improved(0.4, 100, 1000)
+run_improved(0.4, 10, 1000)
