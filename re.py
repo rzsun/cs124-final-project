@@ -18,7 +18,7 @@ def generate_genotypes_parents(maf, size):
     p01_10 = 2 * (1 - maf) * maf # probability of heterogenous
     p11 = (1 - maf) * (1 - maf) # probability of homogenous major
 
-    genotypes = [] # store genotypes
+    genotypes = []
     for i in range(0, size):
         p = np.random.uniform()
         if p < p00:
@@ -118,6 +118,8 @@ def improved_comparison(a, b, p):
     unrelated = [[0 for x in range(3)] for x in range(3)]
     related = [[0 for x in range(3)] for x in range(3)]
 
+    ''' probability calculations for relatedness matrices using Bayes' theorem
+    '''
     unrelated[0][0] = (1-p) * (1-p) * (1-p) * (1-p)
     unrelated[0][1] = p * p * (1-p) * (1-p)
     unrelated[0][2] = 2 * p * (1-p) * (1-p) * (1-p)
@@ -144,7 +146,6 @@ def improved_comparison(a, b, p):
     for i in range(len(a)):
         if unrelated[a[i]][b[i]] > related[a[i]][b[i]]:
             num_unrelated += 1
-        #elif unrelated[a[i]][b[i]] <= related[a[i]][b[i]]:
         else:
             num_related += 1
         
@@ -169,4 +170,5 @@ def run_improved(maf, size, n):
                 correct += 1
     return correct / float(n)
 
-run_improved(0.4, 10, 1000)
+#run_baseline(0.4, 10, 1000)
+#run_improved(0.4, 10, 1000)
